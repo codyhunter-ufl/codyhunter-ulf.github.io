@@ -22,3 +22,11 @@ body {
 a {
   text-decoration: none;
 }
+
+main img {
+  cursor: zoom-in;
+}
+
+[data-media-viewer] img {
+  cursor: default;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Footer, Header } from './components/Layout.jsx'
+import { MediaViewer } from './components/MediaViewer.jsx'
 import { projects } from './data/content.js'
 import { HomePage } from './pages/HomePage.jsx'
 import { ProjectPage } from './pages/ProjectPage.jsx'
@@ -18,6 +19,7 @@ function getRoute() {
 
 function App() {
   const [route, setRoute] = useState(getRoute)
+  const [viewerImage, setViewerImage] = useState(null)
 
   useEffect(() => {
     const onHashChange = () => setRoute(getRoute())
@@ -45,13 +47,30 @@ function App() {
 
   const project = route.page === 'project' ? projects.find((item) => item.slug === route.slug) : null
 
+  const openMediaViewer = (event) => {
+    const image = event.target instanceof HTMLImageElement ? event.target : null
+
+    if (!image || image.closest('[data-media-viewer]')) return
+
+    event.preventDefault()
+    const figure = image.closest('figure')
+    const caption = figure?.querySelector('figcaption')?.textContent?.trim()
+
+    setViewerImage({
+      alt: image.alt || 'Expanded portfolio image',
+      caption,
+      src: image.currentSrc || image.src,
+    })
+  }
+
   return (
-    <div className="min-h-screen bg-[#f4f1ea] text-[#2f2a24]">
+    <div className="min-h-screen bg-[#f4f1ea] text-[#2f2a24]" onClickCapture={openMediaViewer}>
       <Header />
       <main>
         {route.page === 'resume' ? <ResumePage /> : project ? <ProjectPage project={project} /> : <HomePage />}
       </main>
       <Footer />
+      <MediaViewer image={viewerImage} onClose={() => setViewerImage(null)} />
     </div>
   )
 }
